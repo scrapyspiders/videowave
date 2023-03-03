@@ -4,3 +4,10 @@
   overflow: auto;
   resize: both;
 }
+
+.flex{
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 1rem;
+}

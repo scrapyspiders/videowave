@@ -4,17 +4,13 @@ import { type VideoPlayerProps } from '../../types';
 
 export const VideoPlayer = (props: VideoPlayerProps) => {
   const videoRef = useRef<HTMLDivElement>(null);
-  const waveRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<VideoJsPlayer | null>(null);
-
+  
   const createVideoAndWaveform = () => {
     const videoElement = document.createElement('video-js');
     videoElement.classList.add('vjs-default-skin');
     videoRef.current?.appendChild(videoElement);
 
-    const waveElement = document.createElement('div');
-    waveElement.setAttribute('id', 'waveform');
-    waveRef.current?.appendChild(waveElement);
 
     const player = videojs(videoElement, props.options, () => {
       videojs.log('player is ready');
@@ -34,7 +30,7 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
       player.width(props.options.width!);
     }
     // eslint-disable-next-line
-  }, [props, playerRef, waveRef, videoRef]);
+  }, [props, playerRef, videoRef]);
 
   useEffect(() => {
     const player = playerRef.current;
@@ -49,7 +45,6 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
   return (
     <>
       <div ref={videoRef} />
-      <div ref={waveRef} />
     </>
   );
 };

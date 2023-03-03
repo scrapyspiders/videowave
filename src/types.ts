@@ -6,6 +6,7 @@ export type VideoProps = {
   url: string;
   type: VideoType;
   variant?: FilterVariants;
+  isMinimapEnabled?: Boolean;
 };
 
 export type VideoPlayerProps = {

@@ -11,8 +11,9 @@ interface WaveSurferVariant {
   normalize?: boolean;
 }
 
+export const WAVEFORM_CONTAINER_ID = 'waveform';
+export const MINIMAP_CONTAINER_ID = 'minimap-waveform';
 const BACKEND = 'MediaElement';
-const CONTAINER_ID = 'waveform';
 const CURSOR_COLOR = 'black';
 const INITIAL_WIDTH = 640;
 const INITIAL_HEIGHT = 300;
@@ -34,7 +35,24 @@ const wavesurferVariants: Record<FilterVariants, WaveSurferVariant> = {
 };
 
 // Create the options object
-const getVideoJsOptions = (width: number, height: number, variant: FilterVariants): VideoJsPlayerOptions => {
+const getVideoJsOptions = (
+  width: number,
+  height: number,
+  variant: FilterVariants,
+  isMinimapEnabled: Boolean,
+): VideoJsPlayerOptions => {
+  const WaveSurferMinimap = (window.WaveSurfer as any).minimap;
+  const minimapPlugin = isMinimapEnabled
+    ? WaveSurferMinimap.create({
+        container: `#${MINIMAP_CONTAINER_ID}`,
+        waveColor: '#ccc',
+        progressColor: 'purple',
+        height: 30,
+        width: 150,
+        hideScrollbar: true,
+      })
+    : null;
+
   return {
     autoplay: true,
     bigPlayButton: false,
@@ -50,15 +68,16 @@ const getVideoJsOptions = (width: number, height: number, variant: FilterVariant
       // Pass the options for the Wavesurfer plugin
       wavesurfer: {
         backend: BACKEND,
-        container: `#${CONTAINER_ID}`,
+        container: `#${WAVEFORM_CONTAINER_ID}`,
         cursorColor: CURSOR_COLOR,
         debug: true,
         displayMilliseconds: true,
         hideScrollbar: true,
         ...wavesurferVariants[variant],
+        plugins: [minimapPlugin].filter(Boolean),
       },
     },
   };
 };
 
-export { CONTAINER_ID, INITIAL_WIDTH, INITIAL_HEIGHT, getVideoJsOptions };
+export { WAVEFORM_CONTAINER_ID as CONTAINER_ID, INITIAL_WIDTH, INITIAL_HEIGHT, getVideoJsOptions };
