@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
-import { getAudioOptions, WAVEFORM_CONTAINER_ID } from '../../constants';
+import { getAudioOptions } from '../../constants';
 import { VideoProps } from '../../types';
 
 export const AudioPlayer = (
@@ -39,9 +39,5 @@ export const AudioPlayer = (
     };
   }, [props.url, waveformOptions]);
 
-  return (
-    <div>
-      <div id={WAVEFORM_CONTAINER_ID}></div>
-    </div>
-  );
+  return null;
 };

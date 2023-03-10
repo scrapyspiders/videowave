@@ -3,12 +3,23 @@ import { useEffect, useState } from 'react';
 import { FilterVariants, VideoProps } from './types';
 import { server } from './mock/mirage';
 import { FormControl, MenuItem, Select, SelectChangeEvent, Switch, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+  flex: {
+    display: 'flex !important',
+    flexDirection: 'row !important' as any,
+    alignItems: 'center',
+    gap: '1rem',
+  },
+});
 
 function App() {
   const [video, setVideo] = useState<VideoProps | null>(null);
   const [filter, setFilters] = useState<FilterVariants>('oscilloscope');
   const [isMinimapEnabled, setMinimapEnabled] = useState(false);
   const [key, setKey] = useState(Date.now());
+  const classes = useStyles();
 
   useEffect(() => {
     fetch('/api/getVideo')
@@ -30,8 +41,8 @@ function App() {
 
   return (
     <div>
-      <FormControl margin='normal' className='flex'>
-        <div className='flex'>
+      <FormControl margin='normal' className={classes.flex}>
+        <div className={classes.flex}>
           <Typography variant='body1'>Select Variant</Typography>
           <Select id='Select Video' value={filter as any} onChange={handleFilters}>
             <MenuItem value='oscilloscope'>Oscilloscope</MenuItem>
@@ -39,7 +50,7 @@ function App() {
             <MenuItem value='spectrum'>Spectrum</MenuItem>
           </Select>
         </div>
-        <div className='flex'>
+        <div className={classes.flex}>
           <Typography variant='body1'>Display Minimap</Typography>
           <Switch checked={isMinimapEnabled} onChange={(e) => handleSwitch(e.currentTarget.checked)} />
         </div>

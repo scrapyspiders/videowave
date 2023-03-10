@@ -1,9 +1,28 @@
+import { makeStyles } from '@mui/styles';
 import videojs, { VideoJsPlayer } from 'video.js';
 import { MINIMAP_CONTAINER_ID, WAVEFORM_CONTAINER_ID } from '../../constants';
-import { VideoProps } from '../../types';
-import { VideoPlayer } from '../VideoPlayer/VideoPlayer';
 import { useResizable } from '../../customHooks/useResizable';
+import { VideoProps } from '../../types';
 import { AudioPlayer } from '../AudioPlayer/AudioPlayer';
+import { VideoPlayer } from '../VideoPlayer/VideoPlayer';
+
+const useStyles = makeStyles({
+  wrapper: {
+    backgroundColor: '#ddd',
+    height: '85vh',
+    overflow: 'hidden',
+    resize: 'both',
+    border: '1px solid black',
+    minWidth: '200px',
+    minHeight: '100px',
+    '& .vjs-default-skin': {
+      width: '100%',
+    },
+  },
+  padding: {
+    padding: '4px',
+  },
+});
 
 const handlePlayerReady = (source: VideoProps, player: VideoJsPlayer) => {
   player.src({ src: source.url, type: source.type });
@@ -17,14 +36,12 @@ const handlePlayerReady = (source: VideoProps, player: VideoJsPlayer) => {
 
 export const VideoWave = (props: VideoProps) => {
   const [ref, size] = useResizable();
+  const classes = useStyles();
 
   return (
     <>
-      <span>
-        {size.width} - {size.height}
-      </span>
-      <div ref={ref} className='wrapper'>
-        <div className='video-container'>
+      <div ref={ref} className={classes.wrapper}>
+        <div className={classes.padding}>
           {props.type === 'audio/mp3' ? (
             <AudioPlayer
               size={size}
@@ -41,11 +58,11 @@ export const VideoWave = (props: VideoProps) => {
                 setMinimapEnabled={props.setMinimapEnabled}
                 onReady={handlePlayerReady}
               />
-              <div id={WAVEFORM_CONTAINER_ID} />
             </>
           )}
         </div>
-        {props.isMinimapEnabled && <div className='minimap-container' id={MINIMAP_CONTAINER_ID} />}
+        <div className={classes.padding} id={WAVEFORM_CONTAINER_ID} />
+        {props.isMinimapEnabled && <div className={classes.padding} id={MINIMAP_CONTAINER_ID} />}
       </div>
     </>
   );
