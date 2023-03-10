@@ -45,7 +45,14 @@ function App() {
         </div>
       </FormControl>
       {video && (
-        <VideoWave key={key} variant={filter} isMinimapEnabled={isMinimapEnabled} type={video.type} url={video.url} />
+        <VideoWave
+          key={key}
+          isMinimapEnabled={isMinimapEnabled}
+          setMinimapEnabled={handleSwitch}
+          type={video.type}
+          url={video.url}
+          variant={filter}
+        />
       )}
     </div>
   );

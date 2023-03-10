@@ -1,11 +1,23 @@
-.video-container {
-  border: 1px solid black;
-  padding: 4px;
-  overflow: auto;
+.wrapper {
+  background-color: #ddd;
+  height: 85vh;
+  overflow: hidden;
   resize: both;
+  border: 1px solid black;
+  min-width: 200px;
+  min-height: 100px;
 }
 
-.flex{
+.vjs-default-skin {
+  width: 100%;
+}
+
+.video-container,
+.minimap-container {
+  padding: 4px;
+}
+
+.flex {
   display: flex !important;
   flex-direction: row !important;
   align-items: center;

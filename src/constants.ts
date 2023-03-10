@@ -11,12 +11,16 @@ interface WaveSurferVariant {
   normalize?: boolean;
 }
 
-export const WAVEFORM_CONTAINER_ID = 'waveform';
-export const MINIMAP_CONTAINER_ID = 'minimap-waveform';
 const BACKEND = 'MediaElement';
 const CURSOR_COLOR = 'black';
 const INITIAL_WIDTH = 640;
-const INITIAL_HEIGHT = 300;
+export const INITIAL_VIDEO_HEIGHT = 300;
+export const INITIAL_WAVEFORM_HEIGHT = 270;
+export const INITIAL_MINIMAP_WAVEFORM_HEIGHT = 120;
+export const AUDIO_CONTAINER_ID = 'audio-container';
+export const VIDEO_CONTAINER_ID = 'video-container';
+export const WAVEFORM_CONTAINER_ID = 'waveform';
+export const MINIMAP_CONTAINER_ID = 'minimap-waveform';
 
 const wavesurferVariants: Record<FilterVariants, WaveSurferVariant> = {
   oscilloscope: {},
@@ -36,7 +40,6 @@ const wavesurferVariants: Record<FilterVariants, WaveSurferVariant> = {
 
 // Create the options object
 const getVideoJsOptions = (
-  width: number,
   height: number,
   variant: FilterVariants,
   isMinimapEnabled: Boolean,
@@ -47,9 +50,9 @@ const getVideoJsOptions = (
         container: `#${MINIMAP_CONTAINER_ID}`,
         waveColor: '#ccc',
         progressColor: 'purple',
-        height: 30,
-        width: 150,
+        height: INITIAL_MINIMAP_WAVEFORM_HEIGHT,
         hideScrollbar: true,
+        responsive: true,
       })
     : null;
 
@@ -63,7 +66,8 @@ const getVideoJsOptions = (
     loop: false,
     muted: false,
     playsinline: true,
-    width,
+    responsive: true,
+    controlBar: { fullscreenToggle: false },
     plugins: {
       // Pass the options for the Wavesurfer plugin
       wavesurfer: {
@@ -73,6 +77,7 @@ const getVideoJsOptions = (
         debug: true,
         displayMilliseconds: true,
         hideScrollbar: true,
+        responsive: true,
         ...wavesurferVariants[variant],
         plugins: [minimapPlugin].filter(Boolean),
       },
@@ -80,4 +85,36 @@ const getVideoJsOptions = (
   };
 };
 
-export { WAVEFORM_CONTAINER_ID as CONTAINER_ID, INITIAL_WIDTH, INITIAL_HEIGHT, getVideoJsOptions };
+const getAudioOptions = (variant: FilterVariants, isMinimapEnabled: Boolean) => {
+  const WaveSurferMinimap = (window.WaveSurfer as any).minimap;
+  const minimapPlugin = isMinimapEnabled
+    ? WaveSurferMinimap.create({
+        container: `#${MINIMAP_CONTAINER_ID}`,
+        waveColor: '#ccc',
+        progressColor: 'purple',
+        height: INITIAL_MINIMAP_WAVEFORM_HEIGHT,
+        hideScrollbar: true,
+        responsive: true,
+      })
+    : null;
+
+  return {
+    container: `#${WAVEFORM_CONTAINER_ID}`,
+    cursorColor: CURSOR_COLOR,
+    debug: true,
+    displayMilliseconds: true,
+    hideScrollbar: true,
+    responsive: true,
+    height: INITIAL_WAVEFORM_HEIGHT,
+    ...wavesurferVariants[variant],
+    plugins: [minimapPlugin].filter(Boolean),
+  };
+};
+
+export {
+  WAVEFORM_CONTAINER_ID as CONTAINER_ID,
+  INITIAL_WIDTH,
+  INITIAL_VIDEO_HEIGHT as INITIAL_HEIGHT,
+  getVideoJsOptions,
+  getAudioOptions,
+};

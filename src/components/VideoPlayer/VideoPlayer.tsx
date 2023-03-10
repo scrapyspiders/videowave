@@ -1,23 +1,46 @@
-import { useEffect, useRef } from 'react';
-import videojs, { VideoJsPlayer } from 'video.js';
-import { type VideoPlayerProps } from '../../types';
+import { useEffect, useMemo, useRef } from 'react';
+import videojs, { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
+import { getVideoJsOptions, VIDEO_CONTAINER_ID } from '../../constants';
+import type { VideoPlayerProps } from '../../types';
+
+const setPlayerOptions = (player: VideoJsPlayer, options: VideoJsPlayerOptions) => {
+  player.autoplay(options.autoplay!);
+  player.src(options.sources!);
+  player.width(options.width!);
+};
+
+const resizeSurferAndMinimap = (surfer: any) => {
+  surfer?._onResize();
+  if (surfer?.minimap) {
+    surfer?.minimap?._onResize();
+  }
+};
 
 export const VideoPlayer = (props: VideoPlayerProps) => {
   const videoRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<VideoJsPlayer | null>(null);
-  
+
+  const videoJsOptions = useMemo(
+    () => getVideoJsOptions(props.height, props.source.variant!, props.source.isMinimapEnabled!),
+    [props.source.variant, props.source.isMinimapEnabled, props.height],
+  );
+
   const createVideoAndWaveform = () => {
     const videoElement = document.createElement('video-js');
     videoElement.classList.add('vjs-default-skin');
     videoRef.current?.appendChild(videoElement);
 
-
-    const player = videojs(videoElement, props.options, () => {
+    const player = videojs(videoElement, videoJsOptions, () => {
       videojs.log('player is ready');
-      if (props.onReady) props.onReady({ url: props.source.url, type: props.source.type }, player);
+      if (props.onReady) {
+        props.onReady({ url: props.source.url, type: props.source.type }, player);
+      }
     });
-
     playerRef.current = player;
+    const surfer = (player as any)?.wavesurfer()?.surfer;
+    if (surfer) {
+      resizeSurferAndMinimap(surfer);
+    }
   };
 
   useEffect(() => {
@@ -25,9 +48,11 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
       createVideoAndWaveform();
     } else {
       const player = playerRef.current;
-      player.autoplay(props.options.autoplay!);
-      player.src(props.options.sources!);
-      player.width(props.options.width!);
+      setPlayerOptions(player, videoJsOptions);
+      const surfer = (player as any)?.wavesurfer()?.surfer;
+      if (surfer) {
+        resizeSurferAndMinimap(surfer);
+      }
     }
     // eslint-disable-next-line
   }, [props, playerRef, videoRef]);
@@ -44,7 +69,7 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
 
   return (
     <>
-      <div ref={videoRef} />
+      <div id={VIDEO_CONTAINER_ID} ref={videoRef} />
     </>
   );
 };
