@@ -49,6 +49,7 @@ export const VideoWave = (props: VideoProps) => {
               url={props.url}
               isMinimapEnabled={props.isMinimapEnabled}
               variant={props.variant}
+              audioFilter={props.audioFilter!}
             />
           ) : (
             <>
@@ -57,6 +58,7 @@ export const VideoWave = (props: VideoProps) => {
                 source={props}
                 setMinimapEnabled={props.setMinimapEnabled}
                 onReady={handlePlayerReady}
+                audioFilter={props.audioFilter!}
               />
             </>
           )}

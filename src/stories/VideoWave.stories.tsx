@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { VideoWave } from '../components/VideoWave/VideoWave';
 import { mockData } from '../mock/mockData';
-import { VideoProps } from '../types';
+import { AudioFilters, VideoProps } from '../types';
 import { FormControl, MenuItem, Select, SelectChangeEvent, Switch, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
@@ -30,6 +30,7 @@ const VideoWaveStory = (props: Pick<VideoProps, 'variant'>) => {
   const { variant } = props;
   const [options, setOptions] = useState<VideoProps[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<VideoProps | null>(null);
+  const [audioFilters, setAudioFilters] = useState<AudioFilters>('none');
   const [isMinimapEnabled, setMinimapEnabled] = useState(false);
   const [key, setKey] = useState(Date.now());
   const classes = useStyles();
@@ -58,6 +59,10 @@ const VideoWaveStory = (props: Pick<VideoProps, 'variant'>) => {
     setKey(Date.now());
   };
 
+  const handleAudioFilters = (event: SelectChangeEvent<HTMLSelectElement>) => {
+    setAudioFilters(event.target.value as AudioFilters);
+  };
+
   return (
     <>
       {selectedVideo && (
@@ -71,6 +76,17 @@ const VideoWaveStory = (props: Pick<VideoProps, 'variant'>) => {
                 ))}
               </Select>
             </div>
+
+            <div className={classes.flex}>
+              <Typography variant='body1'>Audio Filters</Typography>
+              <Select id='Select Filters' value={audioFilters as any} onChange={handleAudioFilters}>
+                <MenuItem value='none'>None</MenuItem>
+                <MenuItem value='lowpass'>Low</MenuItem>
+                <MenuItem value='highpass'>High</MenuItem>
+                <MenuItem value='bandpass'>Band</MenuItem>
+              </Select>
+            </div>
+
             <div className={classes.flex}>
               <Typography variant='body1'>Display Minimap</Typography>
               <Switch checked={isMinimapEnabled} onChange={(e) => handleSwitch(e.currentTarget.checked)} />
@@ -82,6 +98,7 @@ const VideoWaveStory = (props: Pick<VideoProps, 'variant'>) => {
             type={selectedVideo.type}
             url={selectedVideo.url}
             variant={variant}
+            audioFilter={audioFilters}
           />
         </>
       )}

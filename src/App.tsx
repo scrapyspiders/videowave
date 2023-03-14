@@ -1,6 +1,6 @@
 import { VideoWave } from './components/VideoWave/VideoWave';
 import { useEffect, useState } from 'react';
-import { FilterVariants, VideoProps } from './types';
+import { AudioFilters, FilterVariants, VideoProps } from './types';
 import { server } from './mock/mirage';
 import { FormControl, MenuItem, Select, SelectChangeEvent, Switch, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
@@ -17,6 +17,7 @@ const useStyles = makeStyles({
 function App() {
   const [video, setVideo] = useState<VideoProps | null>(null);
   const [filter, setFilters] = useState<FilterVariants>('oscilloscope');
+  const [audioFilters, setAudioFilters] = useState<AudioFilters>('none');
   const [isMinimapEnabled, setMinimapEnabled] = useState(false);
   const [key, setKey] = useState(Date.now());
   const classes = useStyles();
@@ -32,6 +33,10 @@ function App() {
   const handleFilters = (event: SelectChangeEvent<HTMLSelectElement>) => {
     setFilters(event.target.value as FilterVariants);
     setKey(Date.now());
+  };
+
+  const handleAudioFilters = (event: SelectChangeEvent<HTMLSelectElement>) => {
+    setAudioFilters(event.target.value as AudioFilters);
   };
 
   const handleSwitch = (value: boolean) => {
@@ -51,6 +56,15 @@ function App() {
           </Select>
         </div>
         <div className={classes.flex}>
+          <Typography variant='body1'>Audio Filters</Typography>
+          <Select id='Select Filters' value={audioFilters as any} onChange={handleAudioFilters}>
+            <MenuItem value='none'>None</MenuItem>
+            <MenuItem value='lowpass'>Low</MenuItem>
+            <MenuItem value='highpass'>High</MenuItem>
+            <MenuItem value='bandpass'>Band</MenuItem>
+          </Select>
+        </div>
+        <div className={classes.flex}>
           <Typography variant='body1'>Display Minimap</Typography>
           <Switch checked={isMinimapEnabled} onChange={(e) => handleSwitch(e.currentTarget.checked)} />
         </div>
@@ -63,6 +77,7 @@ function App() {
           type={video.type}
           url={video.url}
           variant={filter}
+          audioFilter={audioFilters}
         />
       )}
     </div>

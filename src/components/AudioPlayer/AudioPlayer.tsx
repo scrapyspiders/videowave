@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import WaveSurfer from 'wavesurfer.js';
-import { getAudioOptions } from '../../constants';
-import { VideoProps } from '../../types';
+import { getAudioFilterNode, getAudioOptions } from '../../constants';
+import { AudioFilters, VideoProps } from '../../types';
 
 export const AudioPlayer = (
   props: VideoProps & {
@@ -9,6 +9,7 @@ export const AudioPlayer = (
       width: number;
       height: number;
     };
+    audioFilter: AudioFilters;
   },
 ) => {
   const waveformRef = useRef<WaveSurfer>();
@@ -38,6 +39,14 @@ export const AudioPlayer = (
       waveform.destroy();
     };
   }, [props.url, waveformOptions]);
+
+  useEffect(() => {
+    if (waveformRef.current) {
+      const waveform = waveformRef.current;
+      const audioCtx = (waveform as any).backend.ac;
+      waveform.backend.setFilter(getAudioFilterNode(audioCtx, props.audioFilter));
+    }
+  }, [props.audioFilter]);
 
   return null;
 };

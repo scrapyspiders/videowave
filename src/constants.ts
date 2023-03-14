@@ -1,5 +1,5 @@
 import { VideoJsPlayerOptions } from 'video.js';
-import { FilterVariants } from './types';
+import { AudioFilters, FilterVariants } from './types';
 import 'video.js/dist/video-js.css';
 import 'videojs-wavesurfer/dist/css/videojs.wavesurfer.css';
 import 'videojs-wavesurfer/dist/videojs.wavesurfer.js';
@@ -11,7 +11,6 @@ interface WaveSurferVariant {
   normalize?: boolean;
 }
 
-const BACKEND = 'MediaElement';
 const CURSOR_COLOR = 'black';
 const INITIAL_WIDTH = 640;
 export const INITIAL_VIDEO_HEIGHT = 300;
@@ -71,7 +70,7 @@ const getVideoJsOptions = (
     plugins: {
       // Pass the options for the Wavesurfer plugin
       wavesurfer: {
-        backend: BACKEND,
+        backend: 'MediaElementWebAudio',
         container: `#${WAVEFORM_CONTAINER_ID}`,
         cursorColor: CURSOR_COLOR,
         debug: true,
@@ -111,10 +110,34 @@ const getAudioOptions = (variant: FilterVariants, isMinimapEnabled: Boolean) => 
   };
 };
 
+const getAudioFilterNode = (audioCtx: AudioContext, audioFilter: AudioFilters): AudioNode => {
+  switch (audioFilter) {
+    case 'lowpass':
+      const lowpassFilter = audioCtx.createBiquadFilter();
+      lowpassFilter.type = 'lowpass';
+      lowpassFilter.frequency.value = 1000;
+      return lowpassFilter;
+    case 'highpass':
+      const highpassFilter = audioCtx.createBiquadFilter();
+      highpassFilter.type = 'highpass';
+      highpassFilter.frequency.value = 1000;
+      return highpassFilter;
+    case 'bandpass':
+      const bandpassFilter = audioCtx.createBiquadFilter();
+      bandpassFilter.type = 'bandpass';
+      bandpassFilter.frequency.value = 1000;
+      bandpassFilter.Q.value = 3;
+      return bandpassFilter;
+    default:
+      return audioCtx.createGain();
+  }
+};
+
 export {
   WAVEFORM_CONTAINER_ID as CONTAINER_ID,
   INITIAL_WIDTH,
   INITIAL_VIDEO_HEIGHT as INITIAL_HEIGHT,
   getVideoJsOptions,
   getAudioOptions,
+  getAudioFilterNode,
 };

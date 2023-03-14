@@ -8,17 +8,20 @@ export type MediaType =
   | 'application/dash+xml'
   | 'audio/mp3';
 export type FilterVariants = 'oscilloscope' | 'spectrogram' | 'spectrum';
+export type AudioFilters = 'none' | 'lowpass' | 'highpass' | 'bandpass';
 export type VideoProps = {
   isMinimapEnabled?: Boolean;
   setMinimapEnabled?: (value: boolean) => void;
   type: MediaType;
   url: string;
+  audioFilter?: AudioFilters;
   variant?: FilterVariants;
 };
 
 export type VideoPlayerProps = {
+  audioFilter: AudioFilters;
   height: number;
+  onReady: (source: VideoProps, player: VideoJsPlayer) => void;
   setMinimapEnabled?: (value: boolean) => void;
   source: VideoProps;
-  onReady: (source: VideoProps, player: VideoJsPlayer) => void;
 };

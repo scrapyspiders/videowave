@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import videojs, { VideoJsPlayer, VideoJsPlayerOptions } from 'video.js';
-import { getVideoJsOptions, VIDEO_CONTAINER_ID } from '../../constants';
+import { getAudioFilterNode, getVideoJsOptions, VIDEO_CONTAINER_ID } from '../../constants';
 import type { VideoPlayerProps } from '../../types';
 
 const setPlayerOptions = (player: VideoJsPlayer, options: VideoJsPlayerOptions) => {
@@ -30,8 +30,7 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
     videoElement.classList.add('vjs-default-skin');
     videoRef.current?.appendChild(videoElement);
 
-    const player = videojs(videoElement, videoJsOptions, () => {
-      videojs.log('player is ready');
+    const player = videojs(videoElement, { ...videoJsOptions, crossOrigin: 'anonymous' } as any, () => {
       if (props.onReady) {
         props.onReady({ url: props.source.url, type: props.source.type }, player);
       }
@@ -50,6 +49,8 @@ export const VideoPlayer = (props: VideoPlayerProps) => {
       const player = playerRef.current;
       setPlayerOptions(player, videoJsOptions);
       const surfer = (player as any)?.wavesurfer()?.surfer;
+      const audioCtx = (surfer as any).backend.ac;
+      surfer.backend.setFilter(getAudioFilterNode(audioCtx, props.audioFilter));
       if (surfer) {
         resizeSurferAndMinimap(surfer);
       }
